@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind Skeleton Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col justify-between">
+  <!-- Header -->
+  <header class="bg-blue-500 text-white py-4">
+    <div class="container mx-auto text-center">
+      <h1 class="text-3xl font-bold">Tailwind Skeleton Generator</h1>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow">
+    <div class="container mx-auto bg-white shadow-md rounded-md p-6 w-full max-w-5xl space-y-6 mt-6">
+      <h2 class="text-xl font-bold text-center">Transform your Tailwind HTML into Skeleton Loaders</h2>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <!-- Input Editor -->
+        <div>
+          <h3 class="text-lg font-semibold">Input HTML</h3>
+          <textarea id="inputEditor" class="w-full h-64 border border-gray-300 rounded-md p-3 text-sm font-mono" placeholder="Paste your Tailwind HTML here..."></textarea>
+        </div>
+        
+        <!-- Output Editor -->
+        <div>
+          <h3 class="text-lg font-semibold">Skeleton Loading Output</h3>
+          <textarea id="outputEditor" class="w-full h-64 border border-gray-300 rounded-md p-3 text-sm font-mono" placeholder="Skeleton loading output will appear here..." readonly></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-between">
+        <button id="generateButton" class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">Generate</button>
+        <button id="copyButton" class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600">Copy</button>
+      </div>
+
+      <!-- Preview Section -->
+      <div id="previewSection" class="mt-6 p-4 border border-gray-300 rounded-md bg-gray-50">
+        <h3 class="text-lg font-semibold mb-4">Preview</h3>
+        <div id="preview" class="p-4 bg-gray-100 rounded-md"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-800 text-white py-4">
+    <div class="container mx-auto text-center">
+      <p class="text-sm">Made by <strong>Animesh</strong></p>
+      <a href="https://www.buymeacoffee.com/yourusername" target="_blank" class="bg-yellow-500 text-gray-800 px-4 py-2 rounded-md hover:bg-yellow-400 inline-block mt-2">
+        Buy Me a Coffee
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    const inputEditor = document.getElementById('inputEditor');
+    const outputEditor = document.getElementById('outputEditor');
+    const generateButton = document.getElementById('generateButton');
+    const copyButton = document.getElementById('copyButton');
+    const preview = document.getElementById('preview');
+
+    // Helper function to wrap text elements dynamically
+    function wrapTextElements(html) {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = html;
+
+      // Recursively process child elements
+      function processElement(element) {
+        Array.from(element.children).forEach((child) => {
+          if (child.children.length > 0) {
+            processElement(child); // Process nested elements
+          } else if (['P', 'SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(child.tagName)) {
+            // Replace text elements with skeleton placeholders
+            child.innerHTML = '';
+            child.classList.add('bg-gray-300', 'animate-pulse', 'rounded-md');
+            child.style.width = '100%';
+            child.style.height = '1rem';
+          }
+        });
+      }
+
+      processElement(tempDiv);
+      return tempDiv.innerHTML;
+    }
+
+    // Generate skeleton loading
+    generateButton.addEventListener('click', () => {
+      const inputHTML = inputEditor.value.trim();
+      if (inputHTML) {
+        const skeletonHTML = wrapTextElements(inputHTML);
+        outputEditor.value = skeletonHTML;
+        preview.innerHTML = skeletonHTML; // Update the live preview
+      } else {
+        alert('Please enter Tailwind HTML code!');
+      }
+    });
+
+    // Copy to clipboard
+    copyButton.addEventListener('click', () => {
+      const outputHTML = outputEditor.value.trim();
+      if (outputHTML) {
+        navigator.clipboard.writeText(outputHTML).then(() => {
+          alert('Skeleton loading code copied to clipboard!');
+        });
+      } else {
+        alert('No output to copy!');
+      }
+    });
+  </script>
+</body>
+</html>
